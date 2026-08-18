@@ -54,8 +54,8 @@ body.dark .empty{color:var(--gray);}
 .hdr-tools button .ic{font-size:0.95rem;}
 .basa-don-btn{position:fixed;right:14px;bottom:76px;width:42px;height:42px;border-radius:50%;background:var(--primary);color:#fff;border:2px solid var(--accent);font-size:1.15rem;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,0.3);z-index:200;}
 .logout-btn{position:absolute;top:14px;left:14px;background:none;border:1px solid rgba(255,255,255,0.35);color:#fff;border-radius:4px;padding:5px 10px;font-family:var(--font-mono);font-size:0.66rem;letter-spacing:0.03em;cursor:pointer;}
-.mgr-toolbar{display:flex;background:var(--primary2);border-bottom:1px solid rgba(255,255,255,0.12);overflow-x:auto;}
-.mgr-toolbar button{flex:0 0 auto;min-width:15.5%;background:none;border:none;border-right:1px solid rgba(255,255,255,0.1);color:#fff;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 4px 7px;font-family:var(--font-mono);font-size:0.46rem;letter-spacing:0;white-space:nowrap;cursor:pointer;text-align:center;}
+.mgr-toolbar{display:flex;background:var(--primary2);border-bottom:1px solid rgba(255,255,255,0.12);}
+.mgr-toolbar button{flex:1;min-width:0;background:none;border:none;border-right:1px solid rgba(255,255,255,0.1);color:#fff;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 1px 7px;font-family:var(--font-mono);font-size:0.44rem;letter-spacing:0;white-space:nowrap;cursor:pointer;text-align:center;overflow:hidden;text-overflow:ellipsis;}
 .mgr-toolbar button:last-child{border-right:none;}
 .mgr-toolbar .ic{font-size:0.95rem;}
 
@@ -549,13 +549,13 @@ td{padding:9px 10px;border-top:1px dotted var(--border);}
       <p>Yönetici Paneli</p>
     </div>
     <div class="mgr-toolbar">
-      <button onclick="closeManagerOverlay()"><span class="ic">🏠</span>Sakin Ekranı</button>
-      <button class="tam-yetki-only" onclick="mYeniYoneticiAc()"><span class="ic">👤</span>Kullanıcı Ekle</button>
+      <button onclick="closeManagerOverlay()"><span class="ic">🏠</span>Sakin</button>
+      <button class="tam-yetki-only" onclick="mYeniYoneticiAc()"><span class="ic">👤</span>Kullanıcı</button>
       <button class="tam-yetki-only" onclick="mKararDefteriAc()"><span class="ic">📋</span>Kararlar</button>
       <button onclick="mSifreDegistirAc()"><span class="ic">🔑</span>Şifre</button>
       <button class="tam-yetki-only" onclick="mYedekAc()"><span class="ic">💾</span>Yedekle</button>
       <button class="tam-yetki-only" onclick="mSifirlamaAc()"><span class="ic">🗑️</span>Sıfırla</button>
-      <button onclick="mLogout()"><span class="ic">⏻</span>Çıkış Yap</button>
+      <button onclick="mLogout()"><span class="ic">⏻</span>Çıkış</button>
     </div>
 
     <div id="m-page-ozet" class="page active">
@@ -619,7 +619,7 @@ td{padding:9px 10px;border-top:1px dotted var(--border);}
       </div>
       <div class="box" style="margin-bottom:10px;">
         <div class="box-head" style="border-radius:6px 6px 0 0;">Gider Listesi <span id="gider-toplam-text"></span></div>
-        <div class="tbl-wrap"><table><thead><tr><th>Tarih</th><th>Açıklama</th><th>Kat.</th><th>Tutar</th><th></th><th></th><th></th></tr></thead><tbody id="gider-tbody"></tbody></table></div>
+        <div class="tbl-wrap"><table><thead><tr><th>Tarih</th><th>Açıklama</th><th>Kat.</th><th>Tutar</th><th></th><th></th></tr></thead><tbody id="gider-tbody"></tbody></table></div>
       </div>
       <details style="margin-bottom:10px;">
         <summary style="background:var(--primary);color:#fff;padding:10px 14px;border-radius:6px;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;font-size:0.84rem;font-weight:600;">
@@ -2145,14 +2145,18 @@ function mRenderGiderler(){
   const eklebtn=document.getElementById('gider-ekle-btn');
   if(eklebtn) eklebtn.style.display=mIzinVar('giderler','ekle')?'block':'none';
   const tbody=document.getElementById('gider-tbody');
-  if(!liste.length){ tbody.innerHTML=`<tr><td colspan="5" class="empty">Bu ay gider yok.</td></tr>`; return; }
+  if(!liste.length){ tbody.innerHTML=`<tr><td colspan="6" class="empty">Bu ay gider yok.</td></tr>`; return; }
   tbody.innerHTML=liste.map(g=>`
     <tr><td style="font-size:0.78rem">${new Date(g.tarih).toLocaleDateString('tr-TR',{day:'numeric',month:'short'})}</td>
     <td style="font-size:0.8rem">${escHtml(g.ac)}${g.harcayan?`<div style="font-size:0.7rem;color:var(--gray);">👤 ${escHtml(g.harcayan)}</div>`:''}</td><td><span class="kat kat-${g.kat}">${KAT[g.kat]}</span></td>
     <td style="font-weight:600">${fmt(g.tutar)}</td>
-    <td>${g.foto?`<button onclick="fotoGoster('${g.id}')" style="background:none;border:none;font-size:1.05rem;cursor:pointer;padding:2px;">📷</button>`:''}</td>
-    <td>${mIzinVar('giderler','duzenle')?`<button class="btn-sm" style="background:#f0ece4;color:var(--primary);" onclick="mGiderDuzenleAc(${g.id})">✎</button>`:''}</td>
-    <td>${mIzinVar('giderler','sil')?`<button class="btn-sm btn-del" onclick="mGiderSil(${g.id})">✕</button>`:''}</td></tr>`).join('');
+    <td style="width:26px;text-align:center;">${g.foto?`<button onclick="fotoGoster('${g.id}')" style="background:none;border:none;font-size:1.05rem;cursor:pointer;padding:2px;">📷</button>`:''}</td>
+    <td style="width:34px;">
+      <div style="display:flex;flex-direction:column;gap:4px;align-items:stretch;">
+        ${mIzinVar('giderler','duzenle')?`<button class="btn-sm" style="background:#f0ece4;color:var(--primary);width:100%;" onclick="mGiderDuzenleAc(${g.id})">✎</button>`:''}
+        ${mIzinVar('giderler','sil')?`<button class="btn-sm btn-del" style="width:100%;" onclick="mGiderSil(${g.id})">✕</button>`:''}
+      </div>
+    </td></tr>`).join('');
 }
 
 let sakinDuzenleModu=new Set();
